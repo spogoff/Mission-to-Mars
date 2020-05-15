@@ -17,7 +17,7 @@ def index():
     return render_template('index.html', mars=mars)
 
 #set flask route for scrape page
-@app.route("/api/v1.0/scrape")
+@app.route("/scrape")
 
 # function to scrape all data using scraping code and update it into a Mongo databse
 def scrape():
@@ -27,5 +27,5 @@ def scrape():
     return "Scraping Successful!"
 
 #run flask
-if __name__ == '__main__":
-app.run()
+if __name__ == "__main__":
+   app.run()
