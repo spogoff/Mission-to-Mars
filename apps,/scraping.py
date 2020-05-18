@@ -18,10 +18,8 @@ def scrape_all():
         'news_paragraph': news_paragraph,
         'featured_image': featured_image(browser),
         'facts': mars_facts(),
-        'last_modified':dt.datetime.now()
-        # 'img_url': img_url,
-        # 'title' : title
-    }
+        'last_modified':dt.datetime.now(),
+        'hemisphere_info': mars_hemisphere(browser)}
 
     #End the WebDriver and return the scraped data
     browser.quit()
@@ -119,34 +117,30 @@ def mars_facts():
 
 
 
-# def mars_hemisphere(browser):
-#     #set the url and visit it by sprinter
-#     url = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
-#     browser.visit(url)
-    
-#     # set and parse the html object 
-#     html = browser.html
-#     hemisphere_soup = BeautifulSoup(html, 'html.parser')
+def mars_hemisphere(browser):
+    url = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
+    browser.visit(url)
 
-#     try:
+    # set and parse the html object 
+    html = browser.html
+    hemisphere_soup = BeautifulSoup(html, 'html.parser')
+
+    hemisphere_info = []
+    #dict_keys = ["title","img_url"]
+    parent_category = hemisphere_soup.find('div', class_="collapsible results")
+    hemisphere_links = parent_category.find_all('div', class_='item')
+    for link in hemisphere_links:
+ 
         
-#         # find all 4 cases of hemisphere 
-#         hemisphere_elems = hemisphere_soup.find_all('h3')
+        hemisphere_title_dirty = link.find('h3').get_text()
+        hemisphere_title = hemisphere_title_dirty.replace(' Enhanced', '')
+        hemisphere_url_rel = link.find('img',class_="thumb").get('src')
+        hemisphere_url = "https://astrogeology.usgs.gov" + hemisphere_url_rel
+        hemisphere_dict = {'image_url': hemisphere_url,'title' : hemisphere_title}
+        
+        hemisphere_info.append(hemisphere_dict)
 
-#     except AttributeError as e:
-#         print(e)
-
-#     #iterate through hemisphere_elems
-#     for hemisphere_elem in hemisphere_elems:
-#         title = hemisphere_elem.text()
-#         hemisphere_elem.click()
-#         image_elem = browser.find_by_id('wide-image-toggle')
-#         image_elem.click()
-#         image_url_rel = hemisphere_elem.find('img', class_="wide_image").get('src')
-#         image_url = f'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars{image_url_rel}'
-#         return title, image_url
-
-    
+    return hemisphere_info
 
 
 if __name__ == "__main__":
